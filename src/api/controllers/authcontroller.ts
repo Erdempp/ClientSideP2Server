@@ -1,42 +1,50 @@
 import express from 'express';
-import User from '../schemas/user';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import asyncHandler from '../utils/asyncHandler';
+import { authorizeLocal } from '../middleware/passport';
+import User from '../schemas/user';
 
 const router = express.Router();
 
 router
-    .post('/register', async (req, res) => {
-        const props = req.body;
-        const { email, name, password } = props;
+  .post(
+    '/register',
+    asyncHandler(async (req, res) => {
+      const props = req.body;
+      const { email, name, password } = props;
 
-        if (!(email && name && password)) {
-            return res.status(400).json({ message: 'One or more properties are missing' })
-        }
+      if (!(email && name && password)) {
+        return res.status(400).json({ message: 'One or more properties are missing' });
+      }
 
-        const user = await User.create(new User({ email, name, password }));
-        if (!user) {
-            return res.status(500).json(new Error('Failed to create new User'));
-        }
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ message: 'User with this email aready exists' });
+      }
 
-        return res.status(201).json(user);
+      const user = await User.create(new User({ email, name, password }));
+      if (!user) {
+        return res.status(500).json({ error: 'Failed to create new user' });
+      }
+
+      return res.status(201).json(user);
     })
+  )
 
-    .post('/login', async (req, res) => {
-        const props = req.body;
-        const { email, password } = props;
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json(new Error('Invalid username or password'));
-        }
-
-        //if bcrypt.compareSync(password, user.password);
-        const token = jwt.sign({ id: user.id }, 'randomSecret', { expiresIn: '24h' })
-        if (!token) {
-            return res.status(500).json(new Error('Internal server error'));
-        }
-
-        return res.status(200).json({ token });
-    });
+  .post(
+    '/login',
+    authorizeLocal,
+    asyncHandler(async (req, res) => {
+      console.log(req.user);
+      const token = jwt.sign({ id: req.user.id }, 'randomSecret', {
+        expiresIn: '24h',
+      });
+      if (!token) {
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      return res.status(200).json({ token });
+    })
+  );
 
 export default router;

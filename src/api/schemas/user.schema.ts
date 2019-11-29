@@ -9,7 +9,7 @@ export interface UserInterface extends mongoose.Document {
   password: string;
 }
 
-export const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   email: { type: String, index: true, required: true },
   name: { type: String, required: true },
   password: { type: String, required: true },

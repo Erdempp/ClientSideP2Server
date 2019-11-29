@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
 import initializePassport from './middleware/passport';
-import { auth, user, team } from './routes';
+import { auth, users, teams, fields } from './routes';
 
 const app = express();
 const port = 6969;
@@ -20,7 +20,7 @@ mongoose.connect('mongodb://localhost/voetbalvereniging', {
   useUnifiedTopology: true,
 });
 
-app.use('/api', auth, user, team);
+app.use('/api', auth, users, teams, fields);
 
 app.use((error, req, res, next) => {
   res.json({ error: error.message });

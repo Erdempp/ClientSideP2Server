@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { UserInterface, UserSchema } from './user.schema';
+import { UserInterface } from './user.schema';
 
 export interface FootballTeam extends mongoose.Document {
   name: string;
@@ -18,7 +18,7 @@ const FootballTeamSchema = new mongoose.Schema({
   players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   sparePlayers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   gender: { type: String, enum: ['men', 'women', 'mixed'], required: true },
-  description: { type: String },
+  description: { type: String, required: true },
 });
 
 export default mongoose.model<FootballTeam>('footballteam', FootballTeamSchema);

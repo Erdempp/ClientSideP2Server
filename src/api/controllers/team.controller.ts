@@ -1,6 +1,6 @@
-import express, { Request, Response } from 'express';
-import asyncHandler from '../utils/asyncHandler';
+import express, { Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
+import asyncHandler from '../utils/asyncHandler';
 import User from '../schemas/user.schema';
 import Team from '../schemas/footballTeam.schema';
 
@@ -21,12 +21,12 @@ router
           .json({ error: 'One or more properties were invalid and/or missing' });
       }
 
-      const coach = await User.findById(currentUser.id);
-      if (!coach) {
-        return res.status(400).json({ error: 'Invalid coach' });
+      const user = await User.findById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
       }
 
-      const team = await Team.create(new Team({ name, city, coach, gender, description }));
+      const team = await Team.create(new Team({ name, city, coach: user, gender, description }));
       if (!team) {
         return res.status(500).json({ error: 'Failed to create new team' });
       }
@@ -49,9 +49,9 @@ router
           .json({ error: 'One or more properties were invalid and/or missing' });
       }
 
-      const coach = await User.findById(currentUser.id);
-      if (!coach) {
-        return res.status(400).json({ error: 'Invalid coach' });
+      const user = await User.findById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
       }
 
       const team = await Team.findById(teamId);
@@ -59,24 +59,24 @@ router
         return res.status(400).json({ error: 'Invalid team' });
       }
 
-      if (!team.coach.equals(coach.id)) {
+      if (!team.coach.equals(user.id)) {
         return res.status(403).json({ error: 'User does not have the required permissions' });
       }
 
-      const user = await User.findById(player);
-      if (!user) {
+      const playerUser = await User.findById(player);
+      if (!playerUser) {
         return res.status(404).json({ error: 'Invalid player' });
       }
 
       if (team.coach.equals(user.id)) {
-        return res.status(409).json({ error: 'Specified user is the coach of this team' });
+        return res.status(409).json({ error: 'Coach can not play in this team' });
       }
 
-      if (team.players.includes(user.id)) {
+      if (team.players.includes(playerUser.id)) {
         return res.status(409).json({ error: 'User already exists in this team' });
       }
 
-      team.players.push(player);
+      team.players.push(playerUser);
       await team.save();
       return res.status(200).json(team);
     })
@@ -97,9 +97,9 @@ router
           .json({ error: 'One or more properties were invalid and/or missing' });
       }
 
-      const coach = await User.findById(currentUser.id);
-      if (!coach) {
-        return res.status(400).json({ error: 'Invalid coach' });
+      const user = await User.findById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
       }
 
       const team = await Team.findById(teamId);
@@ -107,24 +107,24 @@ router
         return res.status(400).json({ error: 'Invalid team' });
       }
 
-      if (!team.coach.equals(coach.id)) {
+      if (!team.coach.equals(user.id)) {
         return res.status(403).json({ error: 'User does not have the required permissions' });
       }
 
-      const user = await User.findById(player);
-      if (!user) {
+      const playerUser = await User.findById(player);
+      if (!playerUser) {
         return res.status(404).json({ error: 'Invalid player' });
       }
 
       if (team.coach.equals(user.id)) {
-        return res.status(409).json({ error: 'Specified user is the coach of this team' });
+        return res.status(409).json({ error: 'Coach can not play in this team' });
       }
 
-      if (team.sparePlayers.includes(user.id)) {
+      if (team.sparePlayers.includes(playerUser.id)) {
         return res.status(409).json({ error: 'User already exists in this team' });
       }
 
-      team.sparePlayers.push(player);
+      team.sparePlayers.push(playerUser);
       await team.save();
       return res.status(200).json(team);
     })
@@ -135,9 +135,11 @@ router
     authorizeJwt,
     asyncHandler(async (req: any, res: Response) => {
       const teams = await Team.find({});
+
       if (!(teams.length > 0)) {
         return res.status(404).json({ error: 'Teams not found' });
       }
+
       return res.status(200).json(teams);
     })
   )
@@ -147,12 +149,6 @@ router
     authorizeJwt,
     asyncHandler(async (req: any, res: Response) => {
       const teamId = req.params.id;
-
-      if (!teamId) {
-        return res
-          .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
-      }
 
       const team = await Team.findById(teamId);
       if (!team) {
@@ -173,15 +169,9 @@ router
 
       const { name, city, gender, description } = props;
 
-      if (!(teamId && name && city && gender && description)) {
-        return res
-          .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
-      }
-
-      const coach = await User.findById(currentUser.id);
-      if (!coach) {
-        return res.status(400).json({ error: 'Invalid coach' });
+      const user = await User.findById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
       }
 
       const team = await Team.findById(teamId);
@@ -189,14 +179,14 @@ router
         return res.status(500).json({ error: 'Invalid team' });
       }
 
-      if (!team.coach.equals(coach.id)) {
+      if (!team.coach.equals(user.id)) {
         return res.status(403).json({ error: 'User does not have the required permissions' });
       }
 
-      team.name = name;
-      team.city = city;
-      team.gender = gender;
-      team.description = description;
+      team.name = name ? name : team.name;
+      team.city = city ? city : team.city;
+      team.gender = gender ? gender : team.gender;
+      team.description = description ? description : team.description;
 
       await team.save();
       return res.status(200).json(team);
@@ -210,9 +200,9 @@ router
       const currentUser = req.user;
       const teamId = req.params.id;
 
-      const coach = await User.findById(currentUser.id);
-      if (!coach) {
-        return res.status(400).json({ error: 'Invalid coach' });
+      const user = await User.findById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
       }
 
       const team = await Team.findById(teamId);
@@ -220,7 +210,7 @@ router
         return res.status(500).json({ error: 'Invalid team' });
       }
 
-      if (!team.coach.equals(coach.id)) {
+      if (!team.coach.equals(user.id)) {
         return res.status(403).json({ error: 'User does not have the required permissions' });
       }
 

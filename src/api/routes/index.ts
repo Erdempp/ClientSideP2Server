@@ -1,3 +1,4 @@
 export { default as auth } from './auth.routes';
-export { default as user } from './user.routes';
-export { default as team } from './team.routes';
+export { default as users } from './user.routes';
+export { default as teams } from './team.routes';
+export { default as fields } from './field.routes';

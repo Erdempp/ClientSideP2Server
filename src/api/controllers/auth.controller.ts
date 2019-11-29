@@ -1,6 +1,5 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeLocal } from '../middleware/passport';
 import User from '../schemas/user';

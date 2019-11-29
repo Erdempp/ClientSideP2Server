@@ -2,8 +2,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
 import initializePassport from './middleware/passport';
-import UserController from './controllers/usercontroller';
-import AuthController from './controllers/authcontroller';
+import { auth, user } from './routes';
 
 const app = express();
 const port = 6969;
@@ -18,10 +17,10 @@ initializePassport();
 mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost/voetbalvereniging', {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-app.use('/users', UserController);
-app.use('/auth', AuthController);
+app.use('/api', auth, user);
 
 app.use((error, req, res, next) => {
   res.json({ error: error.message });

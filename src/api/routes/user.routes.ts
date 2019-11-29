@@ -3,6 +3,6 @@ import UserController from '../controllers/user.controller';
 
 const router = Router();
 
-router.use('/auth', UserController);
+router.use('/users', UserController);
 
 export default router;

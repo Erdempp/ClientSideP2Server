@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeJwt } from '../middleware/passport';
-import User from '../schemas/user';
+import User from '../schemas/user.schema';
 
 const router = express.Router();
 

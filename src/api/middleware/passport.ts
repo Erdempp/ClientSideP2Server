@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
-import User from '../schemas/user';
+import User from '../schemas/user.schema';
 
 export default function initializePassport() {
   passport.use(
@@ -35,7 +35,6 @@ export default function initializePassport() {
         secretOrKey: 'randomSecret',
       },
       async (payload, done) => {
-        console.log(payload);
         const user = await User.findOne({ _id: payload.id }); // controller
         if (!user) {
           return done(null, false, {

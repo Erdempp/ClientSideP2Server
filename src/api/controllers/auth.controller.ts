@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeLocal } from '../middleware/passport';
-import User from '../schemas/user';
+import User from '../schemas/user.schema';
 
 const router = express.Router();
 
@@ -14,12 +14,12 @@ router
       const { email, name, password } = props;
 
       if (!(email && name && password)) {
-        return res.status(400).json({ message: 'One or more properties are missing' });
+        return res.status(400).json({ error: 'One or more properties are missing' });
       }
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return res.status(409).json({ message: 'User with this email aready exists' });
+        return res.status(409).json({ error: 'User with this email aready exists' });
       }
 
       const user = await User.create(new User({ email, name, password }));
@@ -35,7 +35,6 @@ router
     '/login',
     authorizeLocal,
     asyncHandler(async (req, res) => {
-      console.log(req.user);
       const token = jwt.sign({ id: req.user.id }, 'randomSecret', {
         expiresIn: '24h',
       });

@@ -14,12 +14,16 @@ router
       const { email, name, password } = props;
 
       if (!(email && name && password)) {
-        return res.status(400).json({ error: 'One or more properties are missing' });
+        return res
+          .status(400)
+          .json({ error: 'One or more properties are missing' });
       }
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return res.status(409).json({ error: 'User with this email aready exists' });
+        return res
+          .status(409)
+          .json({ error: 'User with this email aready exists' });
       }
 
       const user = await User.create(new User({ email, name, password }));
@@ -28,7 +32,7 @@ router
       }
 
       return res.status(201).json(user);
-    })
+    }),
   )
 
   .post(
@@ -42,7 +46,7 @@ router
         return res.status(500).json({ error: 'Internal server error' });
       }
       return res.status(200).json({ token });
-    })
+    }),
   );
 
 export default router;

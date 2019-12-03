@@ -29,4 +29,7 @@ const FootballFieldSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-export default mongoose.model<FootballField>('footballField', FootballFieldSchema);
+export default mongoose.model<FootballField>(
+  'footballField',
+  FootballFieldSchema,
+);

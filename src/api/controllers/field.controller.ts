@@ -18,7 +18,9 @@ router
       if (!(name && location && length && width && description)) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -27,13 +29,20 @@ router
       }
 
       const field = await Field.create(
-        new Field({ name, contacts: [user], location, length, width, description })
+        new Field({
+          name,
+          contacts: [user],
+          location,
+          length,
+          width,
+          description,
+        }),
       );
       if (!field) {
         return res.status(500).json({ error: 'Failed to create new field' });
       }
       return res.status(201).json(field);
-    })
+    }),
   )
 
   .post(
@@ -48,7 +57,9 @@ router
       if (!contact) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -62,7 +73,9 @@ router
       }
 
       if (!field.contacts.includes(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       const newContact = await User.findById(contact);
@@ -71,13 +84,15 @@ router
       }
 
       if (field.contacts.includes(newContact.id)) {
-        return res.status(409).json({ error: 'Contact already exists for this field' });
+        return res
+          .status(409)
+          .json({ error: 'Contact already exists for this field' });
       }
 
       field.contacts.push(newContact);
       await field.save();
       return res.status(200).json(field);
-    })
+    }),
   )
 
   .post(
@@ -92,7 +107,9 @@ router
       if (!facility) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -106,17 +123,21 @@ router
       }
 
       if (!field.contacts.includes(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       if (field.facilities.includes(facility)) {
-        return res.status(409).json({ error: 'Facility already exists for this field' });
+        return res
+          .status(409)
+          .json({ error: 'Facility already exists for this field' });
       }
 
       field.facilities.push(facility);
       await field.save();
       return res.status(200).json(field);
-    })
+    }),
   )
 
   .get(
@@ -130,7 +151,7 @@ router
       }
 
       return res.status(200).json(fields);
-    })
+    }),
   )
 
   .get(
@@ -145,7 +166,7 @@ router
       }
 
       return res.status(200).json(field);
-    })
+    }),
   )
 
   .put(
@@ -169,7 +190,9 @@ router
       }
 
       if (!field.contacts.includes(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       field.name = name ? name : field.name;
@@ -180,7 +203,7 @@ router
 
       await field.save();
       return res.status(200).json(field);
-    })
+    }),
   )
 
   .delete(
@@ -201,12 +224,14 @@ router
       }
 
       if (!field.contacts.includes(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       await field.remove();
       return res.status(200).json({ message: 'Field successfully deleted' });
-    })
+    }),
   );
 
 export default router;

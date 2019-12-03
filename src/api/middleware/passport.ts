@@ -23,8 +23,8 @@ export default function initializePassport() {
           });
         }
         return done(null, user);
-      }
-    )
+      },
+    ),
   );
 
   passport.use(
@@ -42,10 +42,12 @@ export default function initializePassport() {
           });
         }
         return done(null, user);
-      }
-    )
+      },
+    ),
   );
 }
 
-export const authorizeLocal = passport.authenticate('local', { session: false });
+export const authorizeLocal = passport.authenticate('local', {
+  session: false,
+});
 export const authorizeJwt = passport.authenticate('jwt', { session: false });

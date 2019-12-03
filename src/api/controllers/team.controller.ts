@@ -18,7 +18,9 @@ router
       if (!(name && city && gender && description)) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -26,12 +28,14 @@ router
         return res.status(400).json({ error: 'Malformed request' });
       }
 
-      const team = await Team.create(new Team({ name, city, coach: user, gender, description }));
+      const team = await Team.create(
+        new Team({ name, city, coach: user, gender, description }),
+      );
       if (!team) {
         return res.status(500).json({ error: 'Failed to create new team' });
       }
       return res.status(201).json(team);
-    })
+    }),
   )
 
   .post(
@@ -46,7 +50,9 @@ router
       if (!player) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -60,7 +66,9 @@ router
       }
 
       if (!team.coach.equals(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       const playerUser = await User.findById(player);
@@ -69,17 +77,21 @@ router
       }
 
       if (team.coach.equals(user.id)) {
-        return res.status(409).json({ error: 'Coach can not play in this team' });
+        return res
+          .status(409)
+          .json({ error: 'Coach can not play in this team' });
       }
 
       if (team.players.includes(playerUser.id)) {
-        return res.status(409).json({ error: 'User already exists in this team' });
+        return res
+          .status(409)
+          .json({ error: 'User already exists in this team' });
       }
 
       team.players.push(playerUser);
       await team.save();
       return res.status(200).json(team);
-    })
+    }),
   )
 
   .post(
@@ -94,7 +106,9 @@ router
       if (!player) {
         return res
           .status(412)
-          .json({ error: 'One or more properties were invalid and/or missing' });
+          .json({
+            error: 'One or more properties were invalid and/or missing',
+          });
       }
 
       const user = await User.findById(currentUser.id);
@@ -108,7 +122,9 @@ router
       }
 
       if (!team.coach.equals(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       const playerUser = await User.findById(player);
@@ -117,17 +133,21 @@ router
       }
 
       if (team.coach.equals(user.id)) {
-        return res.status(409).json({ error: 'Coach can not play in this team' });
+        return res
+          .status(409)
+          .json({ error: 'Coach can not play in this team' });
       }
 
       if (team.sparePlayers.includes(playerUser.id)) {
-        return res.status(409).json({ error: 'User already exists in this team' });
+        return res
+          .status(409)
+          .json({ error: 'User already exists in this team' });
       }
 
       team.sparePlayers.push(playerUser);
       await team.save();
       return res.status(200).json(team);
-    })
+    }),
   )
 
   .get(
@@ -141,7 +161,7 @@ router
       }
 
       return res.status(200).json(teams);
-    })
+    }),
   )
 
   .get(
@@ -156,7 +176,7 @@ router
       }
 
       return res.status(200).json(team);
-    })
+    }),
   )
 
   .put(
@@ -180,7 +200,9 @@ router
       }
 
       if (!team.coach.equals(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       team.name = name ? name : team.name;
@@ -190,7 +212,7 @@ router
 
       await team.save();
       return res.status(200).json(team);
-    })
+    }),
   )
 
   .delete(
@@ -211,12 +233,14 @@ router
       }
 
       if (!team.coach.equals(user.id)) {
-        return res.status(403).json({ error: 'User does not have the required permissions' });
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
       }
 
       await team.remove();
       return res.status(200).json({ message: 'Team successfully deleted' });
-    })
+    }),
   );
 
 export default router;

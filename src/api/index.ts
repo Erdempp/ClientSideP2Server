@@ -1,11 +1,14 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import initializePassport from './middleware/passport';
 import { auth, users, teams, fields } from './routes';
 
 const app = express();
 const port = 6969;
+
+app.use(cors());
 
 app.get('/', (req, res) => res.send('Hello World!'));
 

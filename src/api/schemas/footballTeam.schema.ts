@@ -5,8 +5,8 @@ export interface FootballTeamInterface extends mongoose.Document {
   name: string;
   city: string;
   coach: UserInterface;
-  players: UserInterface[];
-  sparePlayers: UserInterface[];
+  players?: UserInterface[];
+  sparePlayers?: UserInterface[];
   gender: 'men' | 'women' | 'mixed';
   description: string;
 }

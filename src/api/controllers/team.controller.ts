@@ -16,11 +16,9 @@ router
       const { name, city, gender, description } = props;
 
       if (!(name && city && gender && description)) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);
@@ -48,11 +46,9 @@ router
       const { player } = props;
 
       if (!player) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);
@@ -104,11 +100,9 @@ router
       const { player } = props;
 
       if (!player) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);
@@ -154,7 +148,10 @@ router
     '/',
     authorizeJwt,
     asyncHandler(async (req: any, res: Response) => {
-      const teams = await Team.find({});
+      const teams = await Team.find({})
+        .populate('coach')
+        .populate('players')
+        .populate('sparePlayers');
 
       if (!(teams.length > 0)) {
         return res.status(404).json({ error: 'Teams not found' });

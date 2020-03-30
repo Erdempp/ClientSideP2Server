@@ -1,10 +1,10 @@
-import express from 'express';
+import { Router } from 'express';
 import { Request, Response } from 'express';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeJwt } from '../middleware/passport';
 import User from '../schemas/user.schema';
 
-const router = express.Router();
+const router = Router();
 
 router
   .get(

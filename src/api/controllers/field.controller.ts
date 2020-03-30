@@ -1,10 +1,10 @@
-import express, { Response } from 'express';
+import { Router, Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
 import asyncHandler from '../utils/asyncHandler';
 import User from '../schemas/user.schema';
 import Field from '../schemas/footballField.schema';
 
-const router = express.Router();
+const router = Router();
 
 router
   .post(
@@ -16,11 +16,9 @@ router
       const { name, location, length, width, description } = props;
 
       if (!(name && location && length && width && description)) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);
@@ -55,11 +53,9 @@ router
       const { contact } = props;
 
       if (!contact) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);
@@ -105,11 +101,9 @@ router
       const { facility } = props;
 
       if (!facility) {
-        return res
-          .status(412)
-          .json({
-            error: 'One or more properties were invalid and/or missing',
-          });
+        return res.status(412).json({
+          error: 'One or more properties were invalid and/or missing',
+        });
       }
 
       const user = await User.findById(currentUser.id);

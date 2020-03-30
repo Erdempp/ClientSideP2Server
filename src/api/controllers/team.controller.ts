@@ -1,10 +1,10 @@
-import express, { Response } from 'express';
+import { Router, Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
 import asyncHandler from '../utils/asyncHandler';
 import User from '../schemas/user.schema';
 import Team from '../schemas/footballTeam.schema';
 
-const router = express.Router();
+const router = Router();
 
 router
   .post(

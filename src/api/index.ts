@@ -1,7 +1,7 @@
-import bodyParser from 'body-parser';
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
+import * as bodyParser from 'body-parser';
+import * as express from 'express';
+import * as mongoose from 'mongoose';
+import * as cors from 'cors';
 import initializePassport from './middleware/passport';
 import { auth, users, teams, fields } from './routes';
 

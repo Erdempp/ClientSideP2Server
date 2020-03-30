@@ -1,10 +1,10 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
+import { Router } from 'express';
+import * as jwt from 'jsonwebtoken';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeLocal } from '../middleware/passport';
 import User from '../schemas/user.schema';
 
-const router = express.Router();
+const router = Router();
 
 router
   .post(

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 import { UserInterface } from './user.schema';
 
 export interface FootballTeamInterface extends mongoose.Document {

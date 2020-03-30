@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
-import passport from 'passport';
+import * as bcrypt from 'bcryptjs';
+import * as passport from 'passport';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import User from '../schemas/user.schema';

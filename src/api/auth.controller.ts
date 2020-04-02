@@ -1,15 +1,16 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeLocal } from '../middleware/passport';
-import User from '../schemas/user.schema';
+import { AuthService } from '../services/auth.service';
 
 const router = Router();
+const authService = new AuthService();
 
 router
   .post(
     '/register',
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (req: Request, res: Response) => {
       const props = req.body;
       const { email, name, password } = props;
 
@@ -19,19 +20,16 @@ router
           .json({ error: 'One or more properties are missing' });
       }
 
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res
-          .status(409)
-          .json({ error: 'User with this email aready exists' });
+      if (!(await authService.exists(email))) {
+        const user = await authService.create(email, name, password);
+        if (!user) {
+          return res.status(500).json({ error: 'Failed to create new user' });
+        }
+        return res.status(201).json(user);
       }
-
-      const user = await User.create(new User({ email, name, password }));
-      if (!user) {
-        return res.status(500).json({ error: 'Failed to create new user' });
-      }
-
-      return res.status(201).json(user);
+      return res
+        .status(409)
+        .json({ error: 'User with this email already exists' });
     }),
   )
 

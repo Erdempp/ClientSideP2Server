@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose';
 import { UserInterface } from './user.schema';
 
-export interface FootballFieldInterface extends mongoose.Document {
+export interface FieldInterface extends mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
   name: string;
-  contacts: UserInterface[];
+  owner: UserInterface;
   location: {
     address: string;
     number: string;
@@ -15,9 +16,9 @@ export interface FootballFieldInterface extends mongoose.Document {
   description: string;
 }
 
-const FootballFieldSchema = new mongoose.Schema({
+const FieldSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
   location: {
     address: { type: String, required: true },
     number: { type: String, required: true },
@@ -29,4 +30,4 @@ const FootballFieldSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-export default mongoose.model<FootballFieldInterface>('footballfield', FootballFieldSchema);
+export default mongoose.model<FieldInterface>('field', FieldSchema);

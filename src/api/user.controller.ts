@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from 'express';
 import asyncHandler from '../utils/asyncHandler';
 import { authorizeJwt } from '../middleware/passport';
-import User from '../schemas/user.schema';
+import User from '../models/user.schema';
 
 const router = Router();
 

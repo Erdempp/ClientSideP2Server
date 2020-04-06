@@ -2,12 +2,12 @@ import asyncHandler from '../utils/asyncHandler';
 import { Router, Request, Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
 import { FieldService } from '../services/field.service';
-import { UserService } from '../services/user.service';
+import { AuthService } from '../services/auth.service';
 import { check, validationResult, body } from 'express-validator';
 
 const router = Router();
 const fieldService = new FieldService();
-const userService = new UserService();
+const authService = new AuthService();
 
 router
   .post(
@@ -45,7 +45,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await userService.getById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -88,7 +88,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await userService.getById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -184,7 +184,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await userService.getById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -229,7 +229,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await userService.getById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }

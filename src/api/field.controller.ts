@@ -98,7 +98,7 @@ router
         return res.status(400).json({ error: 'Invalid field' });
       }
 
-      if (!field.owner === user.id) {
+      if (!field.owner.equals(user.id)) {
         return res
           .status(403)
           .json({ error: 'User does not have the required permissions' });
@@ -194,7 +194,7 @@ router
         return res.status(500).json({ error: 'Invalid field' });
       }
 
-      if (!field.owner === user.id) {
+      if (!field.owner.equals(user.id)) {
         return res
           .status(403)
           .json({ error: 'User does not have the required permissions' });
@@ -239,7 +239,7 @@ router
         return res.status(500).json({ error: 'Invalid field' });
       }
 
-      if (!field.owner === user.id) {
+      if (!field.owner.equals(user.id)) {
         return res
           .status(403)
           .json({ error: 'User does not have the required permissions' });

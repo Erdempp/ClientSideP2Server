@@ -1,13 +1,13 @@
-import User, { UserInterface } from 'src/models/user.schema';
+import User, { UserInterface } from '../models/user.schema';
 
 export class UserService {
   async getAll() {
-    const users = await User.find();
+    const users = await User.find().select('-password');
     return users;
   }
 
   async getById(id: UserInterface['_id']) {
-    const user = await User.findById(id);
+    const user = await User.findById(id).select('-password');
     return user ? user : undefined;
   }
 }

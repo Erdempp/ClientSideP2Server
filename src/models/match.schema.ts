@@ -2,7 +2,8 @@ import * as mongoose from 'mongoose';
 import { TeamInterface } from './team.schema';
 import { FieldInterface } from './field.schema';
 
-export interface MatchInterface extends mongoose.Document {
+export interface MatchInterface {
+  _id: mongoose.Schema.Types.ObjectId;
   homeTeam: TeamInterface;
   awayTeam: TeamInterface;
   field: FieldInterface;
@@ -18,4 +19,4 @@ const MatchSchema = new mongoose.Schema({
   endDateTime: { type: Date, required: true },
 });
 
-export default mongoose.model<MatchInterface>('match', MatchSchema);
+export default mongoose.model<MatchInterface & mongoose.Document>('match', MatchSchema);

@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as cors from 'cors';
 import initializePassport from './middleware/passport';
-import { auth, users, teams, fields } from './routes';
+import { auth, users, teams, fields, matches } from './routes';
 
 const app = express();
 const port = 6969;
@@ -24,7 +24,7 @@ mongoose.connect('mongodb://localhost/voetbalvereniging', {
   useFindAndModify: false,
 });
 
-app.use('/api', auth, users, teams, fields);
+app.use('/api', auth, users, teams, fields, matches);
 
 app.use((error, req, res, next) => {
   res.json({ error: error.message });

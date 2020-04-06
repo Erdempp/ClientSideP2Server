@@ -6,14 +6,14 @@ export class FieldService {
     return newField ? newField : undefined;
   }
 
-  async get(id: FieldInterface['_id']) {
-    const field = await Field.findOne({ _id: id });
-    return field ? field : undefined;
-  }
-
   async getAll() {
     const fields = await Field.find().populate('owner');
     return fields;
+  }
+
+  async get(id: FieldInterface['_id']) {
+    const field = await Field.findOne({ _id: id });
+    return field ? field : undefined;
   }
 
   async update(id: FieldInterface['_id'], changes: Partial<FieldInterface>) {

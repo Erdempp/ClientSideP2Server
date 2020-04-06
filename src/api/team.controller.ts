@@ -42,18 +42,24 @@ router
         return res.status(400).json({ error: 'Malformed request' });
       }
 
-      const team = await teamService.create({
-        name,
-        city,
-        coach: user,
-        gender,
-        description,
-      });
+      if (!(await teamService.exists(user))) {
+        const team = await teamService.create({
+          name,
+          city,
+          coach: user,
+          gender,
+          description,
+        });
 
-      if (!team) {
-        return res.status(500).json({ error: 'Failed to create new team' });
+        if (!team) {
+          return res.status(500).json({ error: 'Failed to create new team' });
+        }
+        return res.status(201).json(team);
       }
-      return res.status(201).json(team);
+
+      return res
+        .status(409)
+        .json({ error: 'Team with this user already exists' });
     }),
   )
 

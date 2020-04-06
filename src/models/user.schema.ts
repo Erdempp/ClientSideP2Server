@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 const saltRounds = 10;
 
 export interface UserInterface extends mongoose.Document {
+  _id: mongoose.Schema.Types.ObjectId;
   email: string;
   name: string;
   password: string;

@@ -10,4 +10,9 @@ export class UserService {
     const user = await User.findById(id).select('-password');
     return user ? user : undefined;
   }
+
+  async getByEmail(email: UserInterface['email']) {
+    const user = await User.findOne({ email }).select('-password');
+    return user ? user : undefined;
+  }
 }

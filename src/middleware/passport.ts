@@ -2,7 +2,9 @@ import * as bcrypt from 'bcryptjs';
 import * as passport from 'passport';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
-import User from '../models/user.schema';
+import { UserService } from '../services/user.service';
+
+const userService = new UserService();
 
 export default function initializePassport() {
   passport.use(
@@ -10,7 +12,7 @@ export default function initializePassport() {
     new LocalStrategy(
       { usernameField: 'email', passwordField: 'password' },
       async (email, password, done) => {
-        const user = await User.findOne({ email }); // use service
+        const user = await userService.getByEmail(email);
         if (!user) {
           return done(null, false, {
             message: 'Invalid email or password',
@@ -35,7 +37,7 @@ export default function initializePassport() {
         secretOrKey: 'randomSecret',
       },
       async (payload, done) => {
-        const user = await User.findOne({ _id: payload.id }); // use service
+        const user = await userService.getById(payload.id);
         if (!user) {
           return done(null, false, {
             message: 'Invalid email or password',

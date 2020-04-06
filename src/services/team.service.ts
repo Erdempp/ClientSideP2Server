@@ -16,7 +16,7 @@ export class TeamService {
       .populate('coach')
       .populate('players')
       .populate('sparePlayers');
-    return teams ? teams : undefined;
+    return teams;
   }
 
   async update(id: TeamInterface['_id'], changes: Partial<TeamInterface>) {

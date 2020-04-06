@@ -1,13 +1,14 @@
-import User from '../models/user.schema';
 import Team from '../models/team.schema';
 import asyncHandler from '../utils/asyncHandler';
 import { Router, Request, Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
 import { TeamService } from '../services/team.service';
+import { UserService } from '../services/user.service';
 import { check, validationResult } from 'express-validator';
 
 const router = Router();
 const teamService = new TeamService();
+const userService = new UserService();
 
 router
   .post(
@@ -36,7 +37,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await userService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -77,7 +78,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await userService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -93,7 +94,7 @@ router
           .json({ error: 'User does not have the required permissions' });
       }
 
-      const playerUser = await User.findById(playerId);
+      const playerUser = await userService.getById(playerId);
       if (!playerUser) {
         return res.status(404).json({ error: 'Invalid player' });
       }
@@ -168,7 +169,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await userService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -213,7 +214,7 @@ router
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await userService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }

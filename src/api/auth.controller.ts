@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import asyncHandler from '../utils/asyncHandler';
+import { Router, Request, Response } from 'express';
+import { check, validationResult } from 'express-validator';
 import { authorizeLocal } from '../middleware/passport';
 import { AuthService } from '../services/auth.service';
 
@@ -10,23 +11,33 @@ const authService = new AuthService();
 router
   .post(
     '/register',
+    [
+      check('email')
+        .isEmail()
+        .withMessage('Invalid email'),
+      check('username')
+        .notEmpty()
+        .withMessage('Username is empty'),
+      check('password')
+        .isLength({ min: 3 })
+        .withMessage('Password should at least be 3 characters long'),
+    ],
     asyncHandler(async (req: Request, res: Response) => {
-      const props = req.body;
-      const { email, name, password } = props;
+      const { email, username, password } = req.body;
 
-      if (!(email && name && password)) {
-        return res
-          .status(400)
-          .json({ error: 'One or more properties are missing' });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
       }
 
       if (!(await authService.exists(email))) {
-        const user = await authService.create(email, name, password);
+        const user = await authService.create(email, username, password);
         if (!user) {
           return res.status(500).json({ error: 'Failed to create new user' });
         }
         return res.status(201).json(user);
       }
+
       return res
         .status(409)
         .json({ error: 'User with this email already exists' });

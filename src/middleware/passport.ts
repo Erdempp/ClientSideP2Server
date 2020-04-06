@@ -9,17 +9,17 @@ export default function initializePassport() {
     'local',
     new LocalStrategy(
       { usernameField: 'email', passwordField: 'password' },
-      async (username, password, done) => {
-        const user = await User.findOne({ email: username }); // controller
+      async (email, password, done) => {
+        const user = await User.findOne({ email }); // use service
         if (!user) {
           return done(null, false, {
-            message: 'Invalid username or password',
+            message: 'Invalid email or password',
           });
         }
         const validation = await bcrypt.compare(password, user.password);
         if (!validation) {
           return done(null, false, {
-            message: 'Invalid username or password',
+            message: 'Invalid email or password',
           });
         }
         return done(null, user);
@@ -35,10 +35,10 @@ export default function initializePassport() {
         secretOrKey: 'randomSecret',
       },
       async (payload, done) => {
-        const user = await User.findOne({ _id: payload.id }); // controller
+        const user = await User.findOne({ _id: payload.id }); // use service
         if (!user) {
           return done(null, false, {
-            message: 'Invalid username or password',
+            message: 'Invalid email or password',
           });
         }
         return done(null, user);

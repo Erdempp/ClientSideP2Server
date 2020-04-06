@@ -1,14 +1,13 @@
 import * as mongoose from 'mongoose';
 import { UserInterface } from './user.schema';
 
-export interface FieldInterface extends mongoose.Document {
+export interface FieldInterface {
   _id: mongoose.Schema.Types.ObjectId;
   name: string;
   owner: UserInterface;
   location: {
     address: string;
-    number: string;
-    zip: string;
+    postalCode: string;
   };
   facilities: string[];
   length: number;
@@ -21,8 +20,7 @@ const FieldSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
   location: {
     address: { type: String, required: true },
-    number: { type: String, required: true },
-    zip: { type: String, required: true },
+    postalCode: { type: String, required: true },
   },
   facilities: [String],
   length: { type: Number, required: true },
@@ -30,4 +28,7 @@ const FieldSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-export default mongoose.model<FieldInterface>('field', FieldSchema);
+export default mongoose.model<FieldInterface & mongoose.Document>(
+  'field',
+  FieldSchema,
+);

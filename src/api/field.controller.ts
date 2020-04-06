@@ -1,67 +1,94 @@
+import asyncHandler from '../utils/asyncHandler';
 import { Router, Request, Response } from 'express';
 import { authorizeJwt } from '../middleware/passport';
-import asyncHandler from '../utils/asyncHandler';
 import { FieldService } from '../services/field.service';
 import { AuthService } from '../services/auth.service';
-import Field from '../models/field.schema';
-import User from '../models/user.schema';
-// import Field from '../models/field.schema';
+import { check, validationResult, body } from 'express-validator';
 
 const router = Router();
 const fieldService = new FieldService();
+const authService = new AuthService();
 
 router
   .post(
     '/',
+    [
+      check('name')
+        .notEmpty()
+        .withMessage('Name is empty'),
+      check('location')
+        .notEmpty()
+        .withMessage('Location is empty'),
+      check('location.address')
+        .notEmpty()
+        .withMessage('Location address is empty'),
+      check('location.postalCode')
+        .isPostalCode('NL')
+        .withMessage('Invalid postal code'),
+      check('length')
+        .isNumeric()
+        .withMessage('Invalid length'),
+      check('width')
+        .isNumeric()
+        .withMessage('Invalid width'),
+      check('description')
+        .notEmpty()
+        .withMessage('Description is empty'),
+    ],
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
-      const props = req.body;
       const currentUser = req.user;
-      const { name, location, length, width, description } = props;
+      const { name, location, length, width, description } = req.body;
 
-      if (!(name && location && length && width && description)) {
-        return res.status(412).json({
-          error: 'One or more properties were invalid and/or missing',
-        });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
 
-      const field = await fieldService.create(
+      const field = await fieldService.create({
         name,
-        user,
+        owner: user,
         location,
         length,
         width,
         description,
-      );
+      });
 
       if (!field) {
         return res.status(500).json({ error: 'Failed to create new field' });
       }
+
       return res.status(201).json(field);
     }),
   )
 
   .post(
     '/:id/facilities',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+      check('facility')
+        .notEmpty()
+        .withMessage('Facility is empty'),
+    ],
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
-      const props = req.body;
       const fieldId = req.params.id;
       const currentUser = req.user;
-      const { facility } = props;
+      const { facility } = req.body;
 
-      if (!facility) {
-        return res.status(412).json({
-          error: 'One or more properties were invalid and/or missing',
-        });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
       }
 
-      const user = await User.findById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -94,20 +121,25 @@ router
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
       const fields = await fieldService.getAll();
-
-      if (!(fields.length > 0)) {
-        return res.status(404).json({ error: 'Fields not found' });
-      }
-
       return res.status(200).json(fields);
     }),
   )
 
   .get(
     '/:id',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+    ],
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
       const fieldId = req.params.id;
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
 
       const field = await fieldService.get(fieldId);
       if (!field) {
@@ -120,15 +152,39 @@ router
 
   .put(
     '/:id',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+      body('location.address')
+        .if(body('location').exists())
+        .notEmpty()
+        .withMessage('Location.address is empty'),
+      body('location.postalCode')
+        .if(body('location').exists())
+        .isPostalCode('NL')
+        .withMessage('Invalid postal code'),
+      check('length')
+        .optional()
+        .isNumeric()
+        .withMessage('Invalid length'),
+      check('width')
+        .optional()
+        .isNumeric()
+        .withMessage('Invalid width'),
+    ],
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
-      const props = req.body;
       const currentUser = req.user;
       const fieldId = req.params.id;
+      const { name, location, length, width, description } = req.body;
 
-      const { name, location, length, width, description } = props;
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
 
-      const user = await User.findById(currentUser.id);
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }
@@ -144,16 +200,13 @@ router
           .json({ error: 'User does not have the required permissions' });
       }
 
-      const updatedField = await fieldService.update(
-        fieldId,
-        new Field({
-          name,
-          location,
-          length,
-          width,
-          description,
-        }),
-      );
+      const updatedField = await fieldService.update(fieldId, {
+        name: name ? name : field.name,
+        location: location ? location : field.location,
+        length: length ? length : field.length,
+        width: width ? width : field.width,
+        description: description ? description : field.description,
+      });
 
       return res.status(200).json(updatedField);
     }),
@@ -161,12 +214,22 @@ router
 
   .delete(
     '/:id',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+    ],
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
       const currentUser = req.user;
       const fieldId = req.params.id;
 
-      const user = await User.findById(currentUser.id);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const user = await authService.getById(currentUser.id);
       if (!user) {
         return res.status(400).json({ error: 'Malformed request' });
       }

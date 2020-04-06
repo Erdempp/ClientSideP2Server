@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { UserInterface } from './user.schema';
 
-export interface TeamInterface extends mongoose.Document {
+export interface TeamInterface {
   _id: mongoose.Schema.Types.ObjectId;
   name: string;
   city: string;
@@ -20,4 +20,4 @@ const TeamSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-export default mongoose.model<TeamInterface>('team', TeamSchema);
+export default mongoose.model<TeamInterface & mongoose.Document>('team', TeamSchema);

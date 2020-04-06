@@ -17,10 +17,11 @@ app.use(bodyParser.json());
 
 initializePassport();
 
-mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost/voetbalvereniging', {
+  useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 app.use('/api', auth, users, teams, fields);

@@ -1,26 +1,9 @@
 import Field, { FieldInterface } from '../models/field.schema';
-import { UserInterface } from '../models/user.schema';
 
 export class FieldService {
-  async create(
-    name: string,
-    user: UserInterface,
-    location: string,
-    length: number,
-    width: number,
-    description: string,
-  ) {
-    const field = await Field.create(
-      new Field({
-        name,
-        contacts: [user],
-        location,
-        length,
-        width,
-        description,
-      }),
-    );
-    return field ? field : undefined;
+  async create(field: Omit<FieldInterface, '_id' | 'facilities'>) {
+    const newField = await Field.create(field);
+    return newField ? newField : undefined;
   }
 
   async get(id: FieldInterface['_id']) {
@@ -29,15 +12,16 @@ export class FieldService {
   }
 
   async getAll() {
-    const fields = await Field.find();
+    const fields = await Field.find().populate('owner');
     return fields;
   }
 
   async update(id: FieldInterface['_id'], changes: Partial<FieldInterface>) {
-    return await Field.findByIdAndUpdate(id, changes);
+    const field = await Field.findByIdAndUpdate(id, changes, { new: true });
+    return field ? field : undefined;
   }
 
   async remove(id: FieldInterface['_id']) {
-      return await Field.findByIdAndDelete(id);
+    await Field.findByIdAndDelete(id);
   }
 }

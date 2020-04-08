@@ -116,7 +116,7 @@ router
     }),
   )
 
-  .delete(
+  .put(
     '/:id/facilities',
     [
       check('id')

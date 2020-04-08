@@ -119,7 +119,7 @@ router
     }),
   )
 
-  .delete(
+  .put(
     '/:id/players',
     [
       check('id')

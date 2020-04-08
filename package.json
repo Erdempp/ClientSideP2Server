@@ -1,7 +1,7 @@
 {
   "engines": {
-    "node": "^10.13.0",
-    "npm": "^6.4.1"
+    "node": "12.16.1",
+    "yarn": "1.19.1"
   },
   "scripts": {
     "start": "tsc && node dist/app.js"

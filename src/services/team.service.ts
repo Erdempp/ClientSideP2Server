@@ -8,14 +8,15 @@ export class TeamService {
 
   async getAll() {
     const teams = await Team.find()
-      .populate('coach')
-      .populate('players')
-      .populate('sparePlayers');
+      .populate('coach', '-password')
+      .populate('players', '-password');
     return teams;
   }
 
   async get(id: TeamInterface['_id']) {
-    const team = await Team.findById(id);
+    const team = await Team.findById(id)
+      .populate('coach', '-password')
+      .populate('players', '-password');
     return team ? team : undefined;
   }
 

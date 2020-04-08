@@ -105,11 +105,19 @@ router
         return res.status(404).json({ error: 'Invalid player' });
       }
 
-      if (team.players.includes(playerUser.id)) {
-        return res
-          .status(409)
-          .json({ error: 'User already exists in this team' });
-      }
+      // if (team.players.includes(playerUser)) {
+      //   return res
+      //     .status(409)
+      //     .json({ error: 'User already exists in this team' });
+      // }
+      // Temporary solution... (change to for..loop because headers are set after they have been set)
+      team.players.forEach(player => {
+        if (player.email === playerUser.email) {
+          return res
+            .status(409)
+            .json({ error: 'User already exists in this team' });
+        }
+      });
 
       team.players.push(playerUser);
       await team.save();

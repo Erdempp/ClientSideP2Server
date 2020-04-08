@@ -28,6 +28,15 @@ router
     authorizeJwt,
     asyncHandler(async (req: Request & any, res: Response) => {
       const { id } = req.params;
+
+      if (id === 'current') {
+        const currentUser = req.user;
+        if (!currentUser) {
+          return res.status(400).json({ error: 'Malformed request' });
+        }
+        return res.status(200).json(currentUser);
+      }
+
       const user = await userService.getById(id);
 
       const errors = validationResult(req);

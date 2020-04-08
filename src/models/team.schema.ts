@@ -20,4 +20,7 @@ const TeamSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-export default mongoose.model<TeamInterface & mongoose.Document>('team', TeamSchema);
+export default mongoose.model<TeamInterface & mongoose.Document>(
+  'team',
+  TeamSchema,
+);

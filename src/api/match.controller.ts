@@ -49,6 +49,7 @@ router
       }
 
       const match = await matchService.create({
+        organizer: user,
         homeTeam: team,
         awayTeam,
         field,

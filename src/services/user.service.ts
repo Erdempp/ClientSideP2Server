@@ -12,7 +12,7 @@ export class UserService {
   }
 
   async getByEmail(email: UserInterface['email']) {
-    const user = await User.findOne({ email }).select('-password');
+    const user = await User.findOne({ email });
     return user ? user : undefined;
   }
 }

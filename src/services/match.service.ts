@@ -8,6 +8,7 @@ export class MatchService {
 
   async getAll() {
     const matches = await Match.find()
+      .populate('organizer', '-password')
       .populate('homeTeam')
       .populate('awayTeam')
       .populate('field');
@@ -16,6 +17,7 @@ export class MatchService {
 
   async get(id: MatchInterface['_id']) {
     const match = await Match.findOne({ _id: id })
+      .populate('organizer', '-password')
       .populate('homeTeam')
       .populate('awayTeam')
       .populate('field');

@@ -7,12 +7,15 @@ export class FieldService {
   }
 
   async getAll() {
-    const fields = await Field.find().populate('owner');
+    const fields = await Field.find().populate('owner', '-password');
     return fields;
   }
 
   async get(id: FieldInterface['_id']) {
-    const field = await Field.findOne({ _id: id });
+    const field = await Field.findOne({ _id: id }).populate(
+      'owner',
+      '-password',
+    );
     return field ? field : undefined;
   }
 

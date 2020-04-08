@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 initializePassport();
 
-mongoose.connect('mongodb://localhost/voetbalvereniging', {
+mongoose.connect('mongodb+srv://dbUser:CSWF@voetbalverenigingdb-mtjqd.mongodb.net/test?retryWrites=true&w=majority', {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,

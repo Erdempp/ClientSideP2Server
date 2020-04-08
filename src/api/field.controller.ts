@@ -116,6 +116,49 @@ router
     }),
   )
 
+  .delete(
+    '/:id/facilities',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+      check('facility')
+        .notEmpty()
+        .withMessage('Facility is empty'),
+    ],
+    authorizeJwt,
+    asyncHandler(async (req: Request & any, res: Response) => {
+      const fieldId = req.params.id;
+      const currentUser = req.user;
+      const { facility } = req.body;
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const user = await userService.getById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
+      }
+
+      const field = await fieldService.get(fieldId);
+      if (!field) {
+        return res.status(400).json({ error: 'Invalid field' });
+      }
+
+      if (!field.owner.equals(user.id)) {
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
+      }
+
+      field.facilities = field.facilities.filter(f => f !== facility);
+      await field.save();
+      return res.status(200).json(field);
+    }),
+  )
+
   .get(
     '/',
     authorizeJwt,

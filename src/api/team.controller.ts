@@ -105,21 +105,63 @@ router
         return res.status(404).json({ error: 'Invalid player' });
       }
 
-      // if (team.players.includes(playerUser)) {
-      //   return res
-      //     .status(409)
-      //     .json({ error: 'User already exists in this team' });
-      // }
-      // Temporary solution... (change to for..loop because headers are set after they have been set)
-      team.players.forEach(player => {
+      for (const player of team.players) {
         if (player.email === playerUser.email) {
           return res
             .status(409)
             .json({ error: 'User already exists in this team' });
         }
-      });
+      }
 
       team.players.push(playerUser);
+      await team.save();
+      return res.status(200).json(team);
+    }),
+  )
+
+  .delete(
+    '/:id/players',
+    [
+      check('id')
+        .isMongoId()
+        .withMessage('Invalid id'),
+      check('playerId')
+        .isMongoId()
+        .withMessage('Invalid playerId'),
+    ],
+    authorizeJwt,
+    asyncHandler(async (req: Request & any, res: Response) => {
+      const teamId = req.params.id;
+      const currentUser = req.user;
+      const { playerId } = req.body;
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const user = await userService.getById(currentUser.id);
+      if (!user) {
+        return res.status(400).json({ error: 'Malformed request' });
+      }
+
+      const team = await teamService.get(teamId);
+      if (!team) {
+        return res.status(400).json({ error: 'Invalid team' });
+      }
+
+      if (!team.coach.equals(user.id)) {
+        return res
+          .status(403)
+          .json({ error: 'User does not have the required permissions' });
+      }
+
+      const playerUser = await userService.getById(playerId);
+      if (!playerUser) {
+        return res.status(404).json({ error: 'Invalid player' });
+      }
+
+      team.players = team.players.filter(p => p.email !== playerUser.email);
       await team.save();
       return res.status(200).json(team);
     }),

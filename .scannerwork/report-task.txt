@@ -1,0 +1,6 @@
+projectKey=ErdemProjectKey
+serverUrl=https://sonarqube.avans-informatica-breda.nl
+serverVersion=7.4.0.18908
+dashboardUrl=https://sonarqube.avans-informatica-breda.nl/dashboard?id=ErdemProjectKey
+ceTaskId=AXFYWzmYTNm1xigl95it
+ceTaskUrl=https://sonarqube.avans-informatica-breda.nl/api/ce/task?id=AXFYWzmYTNm1xigl95it

@@ -6,13 +6,9 @@ import initializePassport from './middleware/passport';
 import { auth, users, teams, fields, matches } from './routes';
 
 const app = express();
-const port = 6969;
+const port = process.env.PORT || 6969;
 
 app.use(cors());
-
-app.all('*', (req, res, next) => {
-  next();
-})
 
 app.get('/', (req, res) => res.send('Hello World!'));
 

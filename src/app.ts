@@ -10,6 +10,10 @@ const port = 6969;
 
 app.use(cors());
 
+app.all('*', (req, res, next) => {
+  next();
+})
+
 app.get('/', (req, res) => res.send('Hello World!'));
 
 app.use(bodyParser.urlencoded({ extended: true }));

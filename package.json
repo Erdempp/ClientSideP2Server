@@ -17,7 +17,8 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "@types/node": "^13.11.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -27,7 +28,6 @@
     "@types/mongoose": "^5.5.32",
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
-    "@types/node": "^13.11.1",
     "prettier": "1.19.1",
     "tslint": "^5.20.1"
   }
